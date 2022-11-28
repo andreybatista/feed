@@ -33,6 +33,7 @@ export function Post({ author, publishedAt, content }) {
   }
 
   function handleNewCommentChange(event) {
+    event.target.setCustomValidity('')
     setNewCommentText(event.target.value)
   }
 
@@ -43,6 +44,12 @@ export function Post({ author, publishedAt, content }) {
 
     setComments(commentWithoutDeletedOne)
   }
+
+  function handleNewCommentInvalid(event){
+    event.target.setCustomValidity('Parece que você ainda não comentou')
+  }
+
+  const isNewCommentEmpty = newCommentText.length === 0
 
   return (
     <article className={styles.post}>
@@ -79,9 +86,11 @@ export function Post({ author, publishedAt, content }) {
           name='comment'
           value={newCommentText}
           onChange={handleNewCommentChange}
+          onInvalid={handleNewCommentInvalid}
+          required
         />
         <footer>
-          <button type='submit'>Publicar</button>
+          <button disabled={isNewCommentEmpty} type='submit'>Publicar</button>
         </footer>
       </form>
 
