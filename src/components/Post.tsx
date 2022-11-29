@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { ChangeEvent, FormEvent, InvalidEvent, useState } from 'react'
 import { format, formatDistanceToNow } from 'date-fns'
 import ptBR from 'date-fns/locale/pt-BR'
 
@@ -7,7 +7,24 @@ import { Comment } from './Comment'
 
 import styles from './Post.module.css'
 
-export function Post({ author, publishedAt, content }) {
+interface Author {
+  name: string;
+  role: string;
+  avatarUrl: string;
+}
+
+interface Content {
+  type: 'paragraph' | 'link';
+  content: string;
+}
+
+export interface PostProps {
+  author: Author;
+  publishedAt: Date;
+  content: Content[];
+}
+
+export function Post({ author, publishedAt, content }: PostProps) {
   const [comments, setComments] = useState([
     'Esse post e Top',
     'Nota 10!'
@@ -24,31 +41,32 @@ export function Post({ author, publishedAt, content }) {
     addSuffix: true
   });
 
-  function handleCreateNewComment(event) {
-    event.preventDefault();
+  function handleCreateNewComment(event: FormEvent) {
+    event.preventDefault()
 
 
     setComments([...comments, newCommentText]);
     setNewCommentText('')
   }
 
-  function handleNewCommentChange(event) {
+  function handleNewCommentChange(event: ChangeEvent<HTMLTextAreaElement>) {
     event.target.setCustomValidity('')
     setNewCommentText(event.target.value)
   }
 
-  function deleteComment(commentToDelete) {
+  
+  function handleNewCommentInvalid(event: InvalidEvent<HTMLTextAreaElement>) {
+    event.target.setCustomValidity('Parece que você ainda não comentou')
+  }
+
+  function deleteComment(commentToDelete: string) {
     const commentWithoutDeletedOne = comments.filter(comment => {
       return comment != commentToDelete
     })
 
     setComments(commentWithoutDeletedOne)
   }
-
-  function handleNewCommentInvalid(event){
-    event.target.setCustomValidity('Parece que você ainda não comentou')
-  }
-
+  
   const isNewCommentEmpty = newCommentText.length === 0
 
   return (
